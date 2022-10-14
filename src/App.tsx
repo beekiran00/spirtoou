@@ -6,9 +6,9 @@ import Qs from "./pages/Qs";
 function App() {
   return (
     <>
-      {/* <Home /> */}
+      <Home />
       {/* <ConsoleLogTests /> */}
-      <Linechart />
+      {/* <Linechart /> */}
       {/* <Qs /> */}
     </>
   );
