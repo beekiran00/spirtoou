@@ -77,48 +77,107 @@ function Home() {
           display: "flex",
           height: "100vh",
           width: "100%",
-          justifyContent: "center",
-
+          paddingTop: 20,
           flexDirection: "column",
         }}
       >
-        <input
-          placeholder="Enter search query"
-          style={{
-            display: "flex",
-            width: "50%",
-            backgroundColor: "transparent",
-            paddingLeft: 10,
-            paddingTop: 10,
-            paddingBottom: 10,
-            borderRadius: 10,
-            outline: "none",
-            alignSelf: "center",
-          }}
-          onChange={updateUrl}
-        />
+        <div style={{ display: "flex" }}>
+          <div
+            style={{
+              display: "flex",
+              flex: 0.5,
+              flexDirection: "column",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <input
+                placeholder="Enter search query"
+                style={{
+                  display: "flex",
+                  width: "40%",
+                  backgroundColor: "transparent",
+                  paddingLeft: 10,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  borderRadius: 10,
+                  outline: "none",
+                  alignSelf: "center",
+                }}
+                onChange={updateUrl}
+              />
 
-        <button
-          style={{
-            display: "flex",
-            border: "1px solid dodgerblue",
-            backgroundColor: "white",
-            color: "dodgerblue",
-            cursor: "pointer",
-            marginTop: 10,
-            marginBottom: 10,
-            borderRadius: 10,
-            outline: "none",
-            paddingTop: 10,
-            paddingBottom: 10,
-            width: "20%",
-            justifyContent: "center",
-            alignSelf: "center",
-          }}
-          onClick={generateData}
-        >
-          Generate Data
-        </button>
+              <button
+                style={{
+                  display: "flex",
+                  border: "1px solid dodgerblue",
+                  backgroundColor: "white",
+                  color: "dodgerblue",
+                  cursor: "pointer",
+                  borderRadius: 10,
+                  outline: "none",
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                  marginLeft: 10,
+                  justifyContent: "center",
+                  alignSelf: "center",
+                }}
+                onClick={() => {}}
+              >
+                Add
+              </button>
+            </div>
+
+            <button
+              style={{
+                display: "flex",
+                border: "1px solid dodgerblue",
+                backgroundColor: "white",
+                color: "dodgerblue",
+                cursor: "pointer",
+                marginTop: 10,
+                marginBottom: 10,
+                borderRadius: 10,
+                outline: "none",
+                paddingTop: 10,
+                paddingBottom: 10,
+                width: "20%",
+                justifyContent: "center",
+                alignSelf: "center",
+              }}
+              onClick={generateData}
+            >
+              Generate Data
+            </button>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flex: 0.5,
+              flexDirection: "column",
+            }}
+          >
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                fontSize: 14,
+                fontWeight: "bold",
+                paddingBottom: 5,
+              }}
+            >
+              Query Comparison List
+            </p>
+            <p style={{ padding: 0, margin: 0, fontSize: 14 }}>climate</p>
+          </div>
+        </div>
 
         <ResponsiveContainer width="100%" height="50%">
           <LineChart
