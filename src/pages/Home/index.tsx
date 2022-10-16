@@ -38,51 +38,6 @@ const linegraphColors: string[] = [
   "#BF4E93",
 ];
 
-const dataDefault = [
-  {
-    date: "1 Oct",
-    "elon musk social media": 0,
-    "elon musk twitter or fb": 0,
-    "elon musk theme:media_social": 0,
-  },
-  {
-    date: "2 Oct",
-    "elon musk social media": 0,
-    "elon musk twitter or fb": 0,
-    "elon musk theme:media_social": 0,
-  },
-  {
-    date: "3 Oct",
-    "elon musk social media": 0,
-    "elon musk twitter or fb": 0,
-    "elon musk theme:media_social": 0,
-  },
-  {
-    date: "4 Oct",
-    "elon musk social media": 0,
-    "elon musk twitter or fb": 0,
-    "elon musk theme:media_social": 0,
-  },
-  {
-    date: "5 Oct",
-    "elon musk social media": 0,
-    "elon musk twitter or fb": 0,
-    "elon musk theme:media_social": 0,
-  },
-  {
-    date: "6 Oct",
-    "elon musk social media": 0,
-    "elon musk twitter or fb": 0,
-    "elon musk theme:media_social": 0,
-  },
-  {
-    date: "7 Oct",
-    "elon musk social media": 0,
-    "elon musk twitter or fb": 0,
-    "elon musk theme:media_social": 0,
-  },
-];
-
 function Home() {
   const inputRef: any = useRef(""); //query searchbox input ref
 
@@ -94,6 +49,7 @@ function Home() {
 
   const [searchTermsArray, setSearchTermsArray] = useState<string[]>([]); //array to store only search terms without their endpoints
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [dataFetched, setDataFetched] = useState<boolean>(false);
 
   //array of search terms and their generated endpoints which would be fetched using observables
@@ -135,6 +91,8 @@ function Home() {
       alert("Search list cannot be empty");
       return;
     }
+
+    setLoading(true);
 
     //generate endpoint for each search term
     let temp: any[] = [];
@@ -270,6 +228,7 @@ function Home() {
       setData(graphData);
       setFullData(finalCombined);
       setDataFetched(true);
+      setLoading(false);
     });
 
     // window.open(endpoint);
@@ -376,15 +335,15 @@ function Home() {
                     fontSize: 14,
                     fontWeight: "bold",
                     padding: 0,
-
                     margin: 0,
                     paddingTop: 10,
                     color: `${linegraphColors[pos]}`,
                   }}
+                  key={pos}
                 >
                   {item}
                 </p>
-                <div>
+                <div key={pos + 1}>
                   {mode.current == "timelinevolraw" ? (
                     <>
                       <span
@@ -393,14 +352,14 @@ function Home() {
                           margin: 0,
                           paddingTop: 5,
                         }}
-                        key={pos}
+                        key={pos + 2}
                       >
                         norm:{" "}
-                        <span style={{ fontWeight: "bold" }}>
+                        <span key={pos + 3} style={{ fontWeight: "bold" }}>
                           {highlightedDataPoint[0][item].norm}
                         </span>
                       </span>
-                      <span> </span>
+                      <span key={pos + 4}> </span>
                     </>
                   ) : null}
 
@@ -412,10 +371,10 @@ function Home() {
                       paddingTop: 5,
                       color: `${linegraphColors[pos]}`,
                     }}
-                    key={item + pos}
+                    key={pos + 5}
                   >
                     value:{" "}
-                    <span style={{ fontWeight: "bold" }}>
+                    <span key={pos + 6} style={{ fontWeight: "bold" }}>
                       {highlightedDataPoint[0][item].value}
                     </span>
                   </span>
@@ -433,21 +392,21 @@ function Home() {
                           textOverflow: "ellipsis",
                           color: `${linegraphColors[pos]}`,
                         }}
-                        key={item + pos + pos}
+                        key={pos + 7}
                       >
-                        Top 3 articles: <br />
+                        Top 3 articles: <br key={pos + 8} />
                         1. {
                           highlightedDataPoint[0][item]?.toparts[0]?.title
                         }{" "}
-                        <br />
+                        <br key={pos + 9} />
                         2. {
                           highlightedDataPoint[0][item]?.toparts[1]?.title
                         }{" "}
-                        <br />
+                        <br key={pos + 10} />
                         3. {
                           highlightedDataPoint[0][item]?.toparts[2]?.title
                         }{" "}
-                        <br />
+                        <br key={pos + 11} />
                       </p>
                     </>
                   ) : null}
@@ -584,27 +543,46 @@ function Home() {
               TimelineVolInfo
             </div>
 
-            <button
+            <div
               style={{
                 display: "flex",
-                border: "1px solid dodgerblue",
-                backgroundColor: "white",
-                color: "dodgerblue",
-                cursor: "pointer",
-                marginTop: 10,
-                marginBottom: 10,
-                borderRadius: 10,
-                outline: "none",
-                paddingTop: 10,
-                paddingBottom: 10,
-                width: "20%",
+
                 justifyContent: "center",
-                alignSelf: "center",
               }}
-              onClick={generateData}
             >
-              Generate Data
-            </button>
+              <button
+                style={{
+                  display: "flex",
+                  border: "1px solid dodgerblue",
+                  backgroundColor: "white",
+                  color: "dodgerblue",
+                  cursor: "pointer",
+                  marginTop: 10,
+                  marginBottom: 10,
+                  borderRadius: 10,
+                  outline: "none",
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  width: "20%",
+                  justifyContent: "center",
+                  alignSelf: "center",
+                }}
+                onClick={generateData}
+              >
+                Generate Data
+              </button>
+              {loading ? (
+                <p
+                  style={{
+                    fontSize: 12,
+                    paddingLeft: 10,
+                    alignSelf: "center",
+                  }}
+                >
+                  loading ...
+                </p>
+              ) : null}
+            </div>
           </div>
 
           <div
@@ -648,7 +626,7 @@ function Home() {
           <LineChart
             width={500}
             height={500}
-            data={dataFetched ? data : dataDefault}
+            data={dataFetched ? data : []}
             margin={{
               top: 5,
               right: 30,
@@ -668,19 +646,8 @@ function Home() {
                 />
               }
             />
-            {/* <Tooltip /> */}
-            <Legend />
 
-            {/* {queryArray.map((count: any, idx: number) => {
-              return (
-                <Line
-                  key={idx}
-                  type="monotone"
-                  dataKey={count.searchTerm}
-                  stroke={linegraphColors[idx]}
-                />
-              );
-            })} */}
+            <Legend />
 
             {dataFetched ? (
               <>
