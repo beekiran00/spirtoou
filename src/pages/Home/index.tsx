@@ -331,7 +331,7 @@ function Home() {
             flexDirection: "column",
             padding: "10px 10px 10px 5px",
             boxShadow: "0px 0px 5px 1px grey",
-            maxWidth: 200,
+            maxWidth: 350,
             borderRadius: 5,
           }}
         >
@@ -409,7 +409,7 @@ function Home() {
                           fontSize: 12,
                           margin: 0,
                           paddingTop: 5,
-                          maxWidth: 200,
+                          maxWidth: 350,
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
