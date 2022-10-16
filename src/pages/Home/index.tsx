@@ -23,6 +23,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import moment from "moment";
+import { MdRemoveCircle } from "react-icons/md";
 const consola = require("consola");
 const qs = require("qs");
 
@@ -78,6 +79,18 @@ function Home() {
     inputRef.current.value = "";
   };
   //🚧🚧🚧//
+
+  const [forceRender, setForceRender] = useState<boolean>(false);
+  const removeSearchTerm = (item: string, idx: number) => {
+    const temp = searchTermsArray;
+    const index = temp.indexOf(item);
+    if (index > -1) {
+      // only splice array when item is found
+      temp.splice(index, 1); // 2nd parameter means remove one item only
+    }
+    setSearchTermsArray(temp);
+    setForceRender(!forceRender);
+  };
 
   const enterKeyPressed = (e: any) => {
     if (e.keyCode === 13) {
@@ -362,7 +375,9 @@ function Home() {
                       >
                         norm:{" "}
                         <span key={pos + 3} style={{ fontWeight: "bold" }}>
-                          {highlightedDataPoint[0][item].norm}
+                          {`${highlightedDataPoint[0][item].norm}` == undefined
+                            ? ""
+                            : `${highlightedDataPoint[0][item].norm}`}
                         </span>
                       </span>
                       <span key={pos + 4}> </span>
@@ -381,7 +396,9 @@ function Home() {
                   >
                     value:{" "}
                     <span key={pos + 6} style={{ fontWeight: "bold" }}>
-                      {highlightedDataPoint[0][item].value}
+                      {`${highlightedDataPoint[0][item].value}` == undefined
+                        ? ""
+                        : `${highlightedDataPoint[0][item].value}`}
                     </span>
                   </span>
 
@@ -613,17 +630,28 @@ function Home() {
 
             {searchTermsArray.map((count: any, idx: number) => {
               return (
-                <p
-                  key={idx}
-                  style={{
-                    padding: 0,
-                    margin: 0,
-                    fontSize: 14,
-                    color: `${linegraphColors[idx]}`,
-                  }}
-                >
-                  {count}
-                </p>
+                <div style={{ display: "flex" }}>
+                  <p
+                    key={idx}
+                    style={{
+                      padding: 0,
+                      margin: 0,
+                      fontSize: 14,
+                      color: `${linegraphColors[idx]}`,
+
+                      marginRight: 10,
+                    }}
+                  >
+                    {count}
+                  </p>
+                  <MdRemoveCircle
+                    style={{ cursor: "pointer" }}
+                    key={count}
+                    onClick={() => {
+                      removeSearchTerm(count, idx);
+                    }}
+                  />
+                </div>
               );
             })}
           </div>
