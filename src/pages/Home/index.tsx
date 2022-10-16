@@ -90,6 +90,7 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const [data, setData] = useState<any[]>([]); //data to store graph points
+  const [fullData, setFullData] = useState<any[]>([]); //combined data of search results
 
   const [searchTermsArray, setSearchTermsArray] = useState<string[]>([]); //array to store only search terms without their endpoints
 
@@ -246,9 +247,9 @@ function Home() {
       }
 
       //this data object is grouped by date, and for each date it gives the search terms data which fell under that date
-      consola.success(finalCombined);
-      consola.info(finalCombined[0]);
-      consola.info(finalCombined[1]);
+      // consola.success(finalCombined);
+      // consola.info(finalCombined[0]);
+      // consola.info(finalCombined[1]);
 
       //from the final combined data, we filter out the one we need for the graph,
       const graphData: any[] = [];
@@ -267,6 +268,7 @@ function Home() {
       }
 
       setData(graphData);
+      setFullData(finalCombined);
       setDataFetched(true);
     });
 
@@ -327,22 +329,119 @@ function Home() {
   }) => {
     // console.log(payload[0]?.payload?.date);
 
-    if (payload[0]?.payload?.date == "7 Oct") {
-    }
+    // if (payload[0]?.payload?.date == "7 Oct") {
+    // }
+
+    const highlightedDataPoint: any[] = fullData.filter(
+      (item: any, pos: number) => {
+        return item.date == label;
+      }
+    );
+    // consola.info("hoevered: ", highlightedDataPoint);
+
+    // for (let count = 0; count < keywordsSearched.length; count++) {
+    //   tmpGraphData[keywordsSearched[count]] =
+    //     finalCombined[x][keywordsSearched[count]]?.value;
+    // }
 
     if (active && payload && payload.length) {
       return (
-        <div>
-          {/* <p>{active}</p> */}
-          {/* <p>{`${label} : ${payload[0]?.payload?.}`}</p> */}
-          {/* {customData.map((item: any, pos: number) => {
+        <div
+          style={{
+            display: "flex",
+            backgroundColor: "transparent",
+            flexDirection: "column",
+            padding: "10px 10px 10px 5px",
+            boxShadow: "0px 0px 5px 1px grey",
+            maxWidth: 200,
+            borderRadius: 5,
+          }}
+        >
+          <p
+            style={{ fontSize: 10, padding: 0, margin: 0, textAlign: "center" }}
+          >
+            {label}
+          </p>
+          {searchTermsArray.map((item: any, pos: number) => {
             return (
               <>
-                <p key={pos}>{item.searchTerm}</p>
-                <p key={item.searchTerm}>{item?.topCharts[0]?.url}</p>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "bold",
+                    padding: 0,
+                    // backgroundColor: "red",
+                    margin: 0,
+                    paddingTop: 10,
+                  }}
+                >
+                  {item}
+                </p>
+                <div>
+                  {mode.current == "timelinevolraw" ? (
+                    <>
+                      <span
+                        style={{
+                          // backgroundColor: "yellow",
+                          fontSize: 12,
+                          margin: 0,
+                          paddingTop: 5,
+                        }}
+                        key={pos}
+                      >
+                        norm: {highlightedDataPoint[0][item].norm}
+                      </span>
+                      <span> </span>
+                    </>
+                  ) : null}
+
+                  <span
+                    style={{
+                      fontSize: 12,
+                      // backgroundColor: "green",
+                      margin: 0,
+                      paddingTop: 5,
+                    }}
+                    key={item + pos}
+                  >
+                    value: {highlightedDataPoint[0][item].value}
+                  </span>
+
+                  {mode.current == "timelinevolinfo" ? (
+                    <>
+                      <p
+                        style={{
+                          // backgroundColor: "yellow",
+                          fontSize: 12,
+                          margin: 0,
+                          paddingTop: 5,
+                          maxWidth: 200,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                        key={item + pos + pos}
+                      >
+                        Top 3 articles: <br />
+                        1. {
+                          highlightedDataPoint[0][item]?.toparts[0]?.title
+                        }{" "}
+                        <br />
+                        2. {
+                          highlightedDataPoint[0][item]?.toparts[1]?.title
+                        }{" "}
+                        <br />
+                        3. {
+                          highlightedDataPoint[0][item]?.toparts[2]?.title
+                        }{" "}
+                        <br />
+                      </p>
+                    </>
+                  ) : null}
+                </div>
               </>
             );
-          })} */}
+          })}
         </div>
       );
     }
@@ -532,10 +631,10 @@ function Home() {
           </div>
         </div>
 
-        <ResponsiveContainer width="100%" height="50%">
+        <ResponsiveContainer width="100%" height="75%">
           <LineChart
             width={500}
-            height={300}
+            height={500}
             data={dataFetched ? data : dataDefault}
             margin={{
               top: 5,
@@ -547,23 +646,16 @@ function Home() {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={dataFetched ? "date" : ""} />
             <YAxis />
-            {/* <Tooltip
+            <Tooltip
               content={
                 <ToolTipContent
                   active={null}
-                  // payload={[
-                  //   {
-                  //     ama: "hello there",
-                  //     kofi: "try em",
-                  //     "kwad abc": "fucked",
-                  //   },
-                  // ]}
                   payload={undefined}
                   label={undefined}
                 />
               }
-            /> */}
-            <Tooltip />
+            />
+            {/* <Tooltip /> */}
             <Legend />
 
             {/* {queryArray.map((count: any, idx: number) => {
