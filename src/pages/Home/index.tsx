@@ -79,6 +79,12 @@ function Home() {
   };
   //🚧🚧🚧//
 
+  const enterKeyPressed = (e: any) => {
+    if (e.keyCode === 13) {
+      addSearchTerm();
+    }
+  };
+
   //🚧🚧🚧//
   const clearSearchTermsArray = () => {
     setSearchTermsArray([]);
@@ -461,6 +467,7 @@ function Home() {
                   alignSelf: "center",
                 }}
                 ref={inputRef}
+                onKeyUp={enterKeyPressed}
                 onChange={updateUrl}
               />
 
@@ -635,7 +642,11 @@ function Home() {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={dataFetched ? "date" : ""} />
+            <XAxis
+              style={{ fontSize: 10, fontWeight: "bold" }}
+              angle={0}
+              dataKey={dataFetched ? "date" : ""}
+            />
             <YAxis />
             <Tooltip
               content={
@@ -655,9 +666,11 @@ function Home() {
                   return (
                     <Line
                       key={pos}
-                      type="monotone"
+                      type="monotoneX"
                       stroke={linegraphColors[pos]}
+                      strokeWidth={2}
                       dataKey={item}
+                      legendType="plainline"
                     />
                   );
                 })}
