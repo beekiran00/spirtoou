@@ -349,7 +349,7 @@ function Home() {
         <div
           style={{
             display: "flex",
-            backgroundColor: "transparent",
+            backgroundColor: "white",
             flexDirection: "column",
             padding: "10px 10px 10px 5px",
             boxShadow: "0px 0px 5px 1px grey",
@@ -358,7 +358,13 @@ function Home() {
           }}
         >
           <p
-            style={{ fontSize: 10, padding: 0, margin: 0, textAlign: "center" }}
+            style={{
+              fontSize: 10,
+              padding: 0,
+              margin: 0,
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
           >
             {label}
           </p>
@@ -370,9 +376,10 @@ function Home() {
                     fontSize: 14,
                     fontWeight: "bold",
                     padding: 0,
-                    // backgroundColor: "red",
+
                     margin: 0,
                     paddingTop: 10,
+                    color: `${linegraphColors[pos]}`,
                   }}
                 >
                   {item}
@@ -382,14 +389,16 @@ function Home() {
                     <>
                       <span
                         style={{
-                          // backgroundColor: "yellow",
                           fontSize: 12,
                           margin: 0,
                           paddingTop: 5,
                         }}
                         key={pos}
                       >
-                        norm: {highlightedDataPoint[0][item].norm}
+                        norm:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {highlightedDataPoint[0][item].norm}
+                        </span>
                       </span>
                       <span> </span>
                     </>
@@ -398,20 +407,23 @@ function Home() {
                   <span
                     style={{
                       fontSize: 12,
-                      // backgroundColor: "green",
+
                       margin: 0,
                       paddingTop: 5,
+                      color: `${linegraphColors[pos]}`,
                     }}
                     key={item + pos}
                   >
-                    value: {highlightedDataPoint[0][item].value}
+                    value:{" "}
+                    <span style={{ fontWeight: "bold" }}>
+                      {highlightedDataPoint[0][item].value}
+                    </span>
                   </span>
 
                   {mode.current == "timelinevolinfo" ? (
                     <>
                       <p
                         style={{
-                          // backgroundColor: "yellow",
                           fontSize: 12,
                           margin: 0,
                           paddingTop: 5,
@@ -419,6 +431,7 @@ function Home() {
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
+                          color: `${linegraphColors[pos]}`,
                         }}
                         key={item + pos + pos}
                       >
