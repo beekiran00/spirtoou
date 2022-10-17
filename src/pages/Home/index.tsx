@@ -130,6 +130,7 @@ function Home() {
       const query: any = { searchTerm: searchTermsArray[count], endpoint };
       temp.push(query);
     }
+    // consola.info(temp);
 
     // setSearchTermsEndpointsArray(temp);
 
@@ -525,6 +526,13 @@ function Home() {
                 name="mode"
               />{" "}
               TimelineVolInfo
+              <input
+                style={{ marginLeft: 15 }}
+                type="radio"
+                value="timelinetone"
+                name="mode"
+              />{" "}
+              TimelineTone
             </div>
 
             <div
