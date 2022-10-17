@@ -249,51 +249,8 @@ function Home() {
       setDataFetched(true);
       setLoading(false);
     });
-
-    // window.open(endpoint);
-
-    // fetch("", {
-    //   method: "GET",
-    //   headers: { "Content-Type": "application/json" },
-    //   mode: "cors",
-    //   // body: JSON.stringify({ username: username, password: password })
-    // })
-    //   .then((res) => res.json())
-    //   .then(
-    //     (res) => {
-    //       var temp = res?.timeline[0]?.data;
-    //       var filtered = temp.map((idx: any) => {
-    //         return {
-    //           name: moment(idx.date).format("D MMM LT"),
-    //           value: idx.value,
-    //         };
-    //       });
-    //       return filtered;
-    //     },
-    //     (err) => {
-    //       consola.error(err);
-    //     }
-    //   )
-    //   .then((data) => {
-    //     setData(data);
-    //   });
   };
   //🚧🚧🚧//
-
-  // let customData: any = [
-  //   {
-  //     searchTerm: "elon musk twitter",
-  //     date: "7th Oct",
-  //     value: 6000,
-  //     topCharts: [{ url: "abc.com", title: "elon musk shite" }],
-  //   },
-  //   {
-  //     searchTerm: "elon musk social media",
-  //     date: "7th Oct",
-  //     value: 12000,
-  //     topCharts: [{ url: "def.com", title: "elon musk fucked" }],
-  //   },
-  // ];
 
   //🚧🚧🚧//
   const ToolTipContent = ({
@@ -305,22 +262,11 @@ function Home() {
     payload: any;
     label: any;
   }) => {
-    // console.log(payload[0]?.payload?.date);
-
-    // if (payload[0]?.payload?.date == "7 Oct") {
-    // }
-
     const highlightedDataPoint: any[] = fullData.filter(
       (item: any, pos: number) => {
         return item.date == label;
       }
     );
-    // consola.info("hoevered: ", highlightedDataPoint);
-
-    // for (let count = 0; count < keywordsSearched.length; count++) {
-    //   tmpGraphData[keywordsSearched[count]] =
-    //     finalCombined[x][keywordsSearched[count]]?.value;
-    // }
 
     if (active && payload && payload.length) {
       return (
@@ -406,6 +352,17 @@ function Home() {
                     <>
                       <p
                         style={{
+                          fontSize: 14,
+                          fontWeight: "bold",
+                          paddingTop: 5,
+                          color: `${linegraphColors[pos]}`,
+                          margin: 0,
+                        }}
+                      >
+                        Top articles
+                      </p>
+                      <p
+                        style={{
                           fontSize: 12,
                           margin: 0,
                           paddingTop: 5,
@@ -417,19 +374,7 @@ function Home() {
                         }}
                         key={pos + 7}
                       >
-                        Top 3 articles: <br key={pos + 8} />
-                        1. {
-                          highlightedDataPoint[0][item]?.toparts[0]?.title
-                        }{" "}
-                        <br key={pos + 9} />
-                        2. {
-                          highlightedDataPoint[0][item]?.toparts[1]?.title
-                        }{" "}
-                        <br key={pos + 10} />
-                        3. {
-                          highlightedDataPoint[0][item]?.toparts[2]?.title
-                        }{" "}
-                        <br key={pos + 11} />
+                        {topArticles(highlightedDataPoint[0][item]?.toparts)}
                       </p>
                     </>
                   ) : null}
@@ -444,6 +389,21 @@ function Home() {
     return null;
   };
   //🚧🚧🚧//
+
+  /**number of top articles to render */
+  const topArticles = (article: any) => {
+    let articles: any = [];
+    var noArticles = 2;
+    for (let i = 0; i < noArticles; i++) {
+      articles.push(
+        <>
+          <span key={i}>{article[i].title}</span>
+          <br />
+        </>
+      );
+    }
+    return articles;
+  };
 
   return (
     <>
