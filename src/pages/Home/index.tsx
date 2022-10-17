@@ -362,21 +362,26 @@ function Home() {
                       >
                         Top articles
                       </p>
-                      <p
-                        style={{
-                          fontSize: 12,
-                          margin: 0,
-                          paddingTop: 5,
-                          maxWidth: 350,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          color: `${linegraphColors[pos]}`,
-                        }}
-                        key={pos + 7}
-                      >
-                        {topArticles(highlightedDataPoint[0][item]?.toparts)}
-                      </p>
+
+                      {highlightedDataPoint[0][item]?.toparts == undefined ? (
+                        <></>
+                      ) : (
+                        <p
+                          style={{
+                            fontSize: 12,
+                            margin: 0,
+                            paddingTop: 5,
+                            maxWidth: 350,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            color: `${linegraphColors[pos]}`,
+                          }}
+                          key={pos + 7}
+                        >
+                          {topArticles(highlightedDataPoint[0][item]?.toparts)}
+                        </p>
+                      )}
                     </>
                   ) : null}
                 </div>
