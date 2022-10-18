@@ -426,8 +426,8 @@ function Home() {
   };
 
   //date range picker value
-  const [fromDate, setFromDate] = useState<any>();
-  const [toDate, setToDate] = useState<any>();
+  const [fromDate, setFromDate] = useState<any>(new Date()); //initialize to current date and time
+  const [toDate, setToDate] = useState<any>(new Date());
 
   return (
     <>
