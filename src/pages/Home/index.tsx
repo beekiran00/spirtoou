@@ -24,6 +24,12 @@ import {
 } from "recharts";
 import moment from "moment";
 import { MdRemoveCircle } from "react-icons/md";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { Dayjs } from "dayjs";
+import Box from "@mui/material/Box";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import TextField from "@mui/material/TextField";
 const consola = require("consola");
 const qs = require("qs");
 
@@ -119,8 +125,8 @@ function Home() {
       const endpoint =
         baseUrl +
         qs.stringify({
-          startdatetime: 20221001000000,
-          enddatetime: 20221007235959,
+          startdatetime: `${moment(fromDate.$d).format("YYYYMMDD") + "000000"}`,
+          enddatetime: `${moment(toDate.$d).format("YYYYMMDD") + "235959"}`,
           query: searchTermsArray[count],
           mode: mode.current,
           maxrecords: 75,
@@ -130,7 +136,6 @@ function Home() {
       const query: any = { searchTerm: searchTermsArray[count], endpoint };
       temp.push(query);
     }
-    // consola.info(temp);
 
     // setSearchTermsEndpointsArray(temp);
 
@@ -399,17 +404,30 @@ function Home() {
   /**number of top articles to render */
   const topArticles = (article: any) => {
     let articles: any = [];
-    var noArticles = 2;
+    var noArticles = 3;
     for (let i = 0; i < noArticles; i++) {
-      articles.push(
-        <>
-          <span key={i}>{article[i].title}</span>
-          <br />
-        </>
-      );
+      if (article[i] == undefined || null || "") {
+        articles.push(
+          <>
+            <span key={i}></span>
+            <br />
+          </>
+        );
+      } else {
+        articles.push(
+          <>
+            <span key={i}>{article[i].title}</span>
+            <br />
+          </>
+        );
+      }
     }
     return articles;
   };
+
+  //date range picker value
+  const [fromDate, setFromDate] = useState<any>();
+  const [toDate, setToDate] = useState<any>();
 
   return (
     <>
@@ -500,6 +518,38 @@ function Home() {
             </div>
 
             <div
+              style={{
+                display: "flex",
+                paddingTop: 5,
+                paddingBottom: 5,
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "5px 0px 5px 0px",
+              }}
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <span style={{ paddingRight: 5, fontSize: 12 }}>From</span>
+                <DatePicker
+                  value={fromDate}
+                  onChange={(e) => {
+                    setFromDate(e);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+                <span style={{ margin: "0px 5px 0px 5px", fontSize: 12 }}>
+                  To
+                </span>
+                <DatePicker
+                  value={toDate}
+                  onChange={(e) => {
+                    setToDate(e);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+
+            <div
               onChange={radioBtnChanged}
               style={{
                 display: "flex",
@@ -543,7 +593,6 @@ function Home() {
             <div
               style={{
                 display: "flex",
-
                 justifyContent: "center",
               }}
             >
