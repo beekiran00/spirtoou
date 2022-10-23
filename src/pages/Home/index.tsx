@@ -30,6 +30,9 @@ import Box from "@mui/material/Box";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import TextField from "@mui/material/TextField";
+import ArtList from "../ArtList";
+import randomString from "./index.logic";
+
 const consola = require("consola");
 const qs = require("qs");
 
@@ -77,20 +80,14 @@ const linegraphColors: string[] = [
 function Home() {
   const inputRef: any = useRef(""); //query searchbox input ref
 
-  //search term keyword variable
-  const [searchTerm, setSearchTerm] = useState<string>("");
-
+  const [searchTerm, setSearchTerm] = useState<string>(""); //search keyword input value
   const [data, setData] = useState<any[]>([]); //data to store graph points
   const [fullData, setFullData] = useState<any[]>([]); //combined data of search results
-
-  const [searchTermsArray, setSearchTermsArray] = useState<string[]>([]); //array to store only search terms without their endpoints
-
-  const [loading, setLoading] = useState<boolean>(false);
-  const [dataFetched, setDataFetched] = useState<boolean>(false);
-
-  //array of search terms and their generated endpoints which would be fetched using observables
+  const [searchTermsArray, setSearchTermsArray] = useState<string[]>([]); //array to store only search terms without their generated urls
+  const [loading, setLoading] = useState<boolean>(false); //to display "loading..." text when generating data
+  const [dataFetched, setDataFetched] = useState<boolean>(false); //true sets the graph to fetcheddata, false sets graph to empty data
   const [searchTermsEndpointsArray, setSearchTermsEndpointsArray] =
-    useState<any>([]);
+    useState<any>([]); //array of search terms and their generated endpoints which would be fetched using observables
 
   const updateUrl = (url: any) => {
     setSearchTerm(url.target.value);
@@ -102,6 +99,8 @@ function Home() {
     //change the mode (timelinevol, timelinevolraw or timelinevolinfo) depending on user selection without rerendering component
     // setMode(e.target.value);
     mode.current = e.target.value;
+
+    mode.current == "artlist" ? setTogglePage(true) : setTogglePage(false);
   };
 
   //🚧🚧🚧//
@@ -149,6 +148,7 @@ function Home() {
     // consola.info(searchTermsArray);
 
     setLoading(true);
+    setData([]);
 
     //generate endpoint for each search term
     let temp: any[] = [];
@@ -165,7 +165,6 @@ function Home() {
           sort: "hybridrel",
         });
       const query: any = { searchTerm: searchTermsArray[count], endpoint };
-      consola.info(endpoint);
       temp.push(query);
     }
 
@@ -208,83 +207,89 @@ function Home() {
     forkJoin(requests).subscribe((res) => {
       reqData = res;
 
-      const combinedQueriesData = reqData.map((item: any, idx: number) => {
-        return {
-          searchTerm: item?.queryResult?.query_details?.title,
-          resultsData: item?.queryResult?.timeline[0]?.data,
-        };
-      });
+      //data fetched with "mode=artlist" do not return different keys from timelinevol,timelinevolraw or timelinelinevolinfo
+      if (mode.current === "artlist") {
+        consola.info(reqData);
+      } else {
+        const combinedQueriesData = reqData.map((item: any, idx: number) => {
+          return {
+            searchTerm: item?.queryResult?.query_details?.title,
+            resultsData: item?.queryResult?.timeline[0]?.data,
+          };
+        });
 
-      // consola.success(combinedQueriesData);
+        // consola.success(combinedQueriesData);
 
-      //store search keywords,  and length of results for each item's search data
-      // let noKeywordsSearched: number = combinedQueriesData.length;
-      let keywordsSearched: string[] = [];
-      for (let count = 0; count < combinedQueriesData.length; count++) {
-        keywordsSearched.push(combinedQueriesData[count].searchTerm);
-      }
-      let lenKeywordDataResult: number =
-        (combinedQueriesData[0]?.resultsData).length;
+        //store search keywords,  and length of results for each item's search data
+        // let noKeywordsSearched: number = combinedQueriesData.length;
+        let keywordsSearched: string[] = [];
+        for (let count = 0; count < combinedQueriesData.length; count++) {
+          keywordsSearched.push(combinedQueriesData[count].searchTerm);
+        }
+        let lenKeywordDataResult: number =
+          (combinedQueriesData[0]?.resultsData).length;
 
-      //modes can timelinevol, timelinevolraw or timelinevolinfo. Regardless the mode type. We gather the object keys from the mode type produced
-      const modeKeys = Object.keys(combinedQueriesData[0]?.resultsData[0]);
-      // consola.info(modeKeys);
+        //modes can timelinevol, timelinevolraw or timelinevolinfo. Regardless the mode type. We gather the object keys from the mode type produced
+        const modeKeys = Object.keys(combinedQueriesData[0]?.resultsData[0]);
+        // consola.info(modeKeys);
 
-      //according to dates, group all data for each search term
-      let finalCombined: any[] = [];
-      for (let count = 0; count < lenKeywordDataResult; count++) {
-        //get specific date from result
-        let originalDateFormat =
-          combinedQueriesData[0]?.resultsData[count].date;
-        let cnvtDateFormat = moment(originalDateFormat).format("D MMM LT");
+        //according to dates, group all data for each search term
+        let finalCombined: any[] = [];
+        for (let count = 0; count < lenKeywordDataResult; count++) {
+          //get specific date from result
+          let originalDateFormat =
+            combinedQueriesData[0]?.resultsData[count].date;
+          let cnvtDateFormat = moment(originalDateFormat).format("D MMM LT");
 
-        let tmpSearchKeywordData: any = { date: cnvtDateFormat };
+          let tmpSearchKeywordData: any = { date: cnvtDateFormat };
 
-        for (let count = 0; count < keywordsSearched.length; count++) {
-          // const tempData = (combinedQueriesData[0]?.resultsData[count]).filter((item:any,pos:number)=>{
-          //   item.date === date
-          // })
+          for (let count = 0; count < keywordsSearched.length; count++) {
+            // const tempData = (combinedQueriesData[0]?.resultsData[count]).filter((item:any,pos:number)=>{
+            //   item.date === date
+            // })
 
-          const keywordData = (combinedQueriesData[count]?.resultsData).filter(
-            (item: any, pos: number) => {
+            const keywordData = (combinedQueriesData[
+              count
+            ]?.resultsData).filter((item: any, pos: number) => {
               return item.date === originalDateFormat;
-            }
-          );
-          // consola.info("date: ", date);
-          // consola.info("search term", combinedQueriesData[count]?.searchTerm);
-          // consola.info("search term data: ", data);
+            });
+            // consola.info("date: ", date);
+            // consola.info("search term", combinedQueriesData[count]?.searchTerm);
+            // consola.info("search term data: ", data);
 
-          tmpSearchKeywordData[combinedQueriesData[count]?.searchTerm] =
-            keywordData[0];
+            tmpSearchKeywordData[combinedQueriesData[count]?.searchTerm] =
+              keywordData[0];
+          }
+
+          finalCombined.push(tmpSearchKeywordData);
         }
 
-        finalCombined.push(tmpSearchKeywordData);
-      }
+        //this data object is grouped by date, and for each date it gives the search terms data which fell under that date
+        // consola.success(finalCombined);
+        // consola.info(finalCombined[0]);
+        // consola.info(finalCombined[1]);
 
-      //this data object is grouped by date, and for each date it gives the search terms data which fell under that date
-      // consola.success(finalCombined);
-      // consola.info(finalCombined[0]);
-      // consola.info(finalCombined[1]);
+        //from the final combined data, we filter out the one we need for the graph,
+        const graphData: any[] = [];
+        for (let count = 0; count < finalCombined.length; count++) {
+          //first store date in graph data object
+          let tmpGraphData: any = { date: finalCombined[count].date };
+          const x = count;
 
-      //from the final combined data, we filter out the one we need for the graph,
-      const graphData: any[] = [];
-      for (let count = 0; count < finalCombined.length; count++) {
-        //first store date in graph data object
-        let tmpGraphData: any = { date: finalCombined[count].date };
-        const x = count;
+          //loop through the search keyword names and append their values to form an object
+          for (let count = 0; count < keywordsSearched.length; count++) {
+            tmpGraphData[keywordsSearched[count]] =
+              finalCombined[x][keywordsSearched[count]]?.value;
+          }
 
-        //loop through the search keyword names and append their values to form an object
-        for (let count = 0; count < keywordsSearched.length; count++) {
-          tmpGraphData[keywordsSearched[count]] =
-            finalCombined[x][keywordsSearched[count]]?.value;
+          graphData.push(tmpGraphData);
         }
 
-        graphData.push(tmpGraphData);
+        setData(graphData);
+        setFullData(finalCombined);
+        setDataFetched(true);
       }
 
-      setData(graphData);
-      setFullData(finalCombined);
-      setDataFetched(true);
       setLoading(false);
     });
   };
@@ -318,6 +323,7 @@ function Home() {
             maxWidth: 600,
             borderRadius: 5,
           }}
+          key={randomString(5)}
         >
           <p
             style={{
@@ -327,6 +333,7 @@ function Home() {
               textAlign: "center",
               fontWeight: "bold",
             }}
+            key={randomString(5)}
           >
             {label}
           </p>
@@ -342,11 +349,11 @@ function Home() {
                     paddingTop: 10,
                     color: `${linegraphColors[pos]}`,
                   }}
-                  key={pos}
+                  key={randomString(5)}
                 >
                   {item}
                 </p>
-                <div key={pos + 1}>
+                <div key={randomString(5)}>
                   {mode.current == "timelinevolraw" ? (
                     <>
                       <span
@@ -355,31 +362,33 @@ function Home() {
                           margin: 0,
                           paddingTop: 5,
                         }}
-                        key={pos + 2}
+                        key={randomString(5)}
                       >
                         norm:{" "}
-                        <span key={pos + 3} style={{ fontWeight: "bold" }}>
+                        <span
+                          key={randomString(5)}
+                          style={{ fontWeight: "bold" }}
+                        >
                           {`${highlightedDataPoint[0][item]}` == undefined
                             ? ""
                             : `${highlightedDataPoint[0][item].norm}`}
                         </span>
                       </span>
-                      <span key={pos + 4}> </span>
+                      <span key={randomString(5)}> </span>
                     </>
                   ) : null}
 
                   <span
                     style={{
                       fontSize: 12,
-
                       margin: 0,
                       paddingTop: 5,
                       color: `${linegraphColors[pos]}`,
                     }}
-                    key={pos + 5}
+                    key={randomString(5)}
                   >
                     value:{" "}
-                    <span key={pos + 6} style={{ fontWeight: "bold" }}>
+                    <span key={randomString(5)} style={{ fontWeight: "bold" }}>
                       {`${highlightedDataPoint[0][item]}` == undefined
                         ? ""
                         : `${highlightedDataPoint[0][item].value}`}
@@ -396,6 +405,7 @@ function Home() {
                           color: `${linegraphColors[pos]}`,
                           margin: 0,
                         }}
+                        key={randomString(5)}
                       >
                         Top articles
                       </p>
@@ -403,21 +413,17 @@ function Home() {
                       {highlightedDataPoint[0][item] == undefined ? (
                         <></>
                       ) : (
-                        <p
+                        <div
                           style={{
                             fontSize: 12,
                             margin: 0,
                             paddingTop: 5,
-                            maxWidth: 600,
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            color: `${linegraphColors[pos]}`,
+                            // color: `${linegraphColors[pos]}`,
                           }}
-                          key={pos + 7}
+                          key={randomString(5)}
                         >
                           {topArticles(highlightedDataPoint[0][item]?.toparts)}
-                        </p>
+                        </div>
                       )}
                     </>
                   ) : null}
@@ -441,15 +447,46 @@ function Home() {
       if (article[i] == undefined || null || "") {
         articles.push(
           <>
-            <span key={i}></span>
-            <br />
+            <span key={randomString(5)}></span>
+            <br key={randomString(5)} />
           </>
         );
       } else {
         articles.push(
           <>
-            <span key={i}>{article[i].title}</span>
-            <br />
+            <div
+              key={randomString(5)}
+              style={{ paddingBottom: 5, margin: 0, display: "flex" }}
+            >
+              <div
+                style={{
+                  maxWidth: 300,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                key={randomString(5)}
+              >
+                <span key={randomString(5)}>{article[i].title}</span>
+              </div>
+
+              <div
+                style={{
+                  maxWidth: 300,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+                key={randomString(5)}
+              >
+                <span style={{ marginLeft: 5 }} key={randomString(5)}>
+                  <span key={randomString(5)} style={{ fontWeight: "bold" }}>
+                    URL:
+                  </span>{" "}
+                  {article[i].url}
+                </span>
+              </div>
+            </div>
           </>
         );
       }
@@ -461,6 +498,8 @@ function Home() {
   const [fromDate, setFromDate] = useState<any>(new Date()); //initialize to current date and time
   const [toDate, setToDate] = useState<any>(new Date());
 
+  const [togglePage, setTogglePage] = useState<boolean>(false); //toggle between graph and articlelist page
+
   return (
     <>
       <div
@@ -468,11 +507,11 @@ function Home() {
           display: "flex",
           height: "100vh",
           width: "100%",
-          paddingTop: 20,
+
           flexDirection: "column",
         }}
       >
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", flex: 0.2 }}>
           <div
             style={{
               display: "flex",
@@ -620,6 +659,13 @@ function Home() {
                 name="mode"
               />{" "}
               TimelineTone
+              <input
+                style={{ marginLeft: 15 }}
+                type="radio"
+                value="artlist"
+                name="mode"
+              />{" "}
+              Article List
             </div>
 
             <div
@@ -695,9 +741,10 @@ function Home() {
                       display: "flex",
                       marginBottom: 10,
                     }}
+                    key={randomString(5)}
                   >
                     <p
-                      key={idx}
+                      key={randomString(5)}
                       style={{
                         padding: 0,
                         margin: 0,
@@ -711,7 +758,7 @@ function Home() {
                     </p>
                     <MdRemoveCircle
                       style={{ cursor: "pointer" }}
-                      key={count}
+                      key={randomString(5)}
                       onClick={() => {
                         removeSearchTerm(count, idx);
                       }}
@@ -767,55 +814,67 @@ function Home() {
           </div>
         </div>
 
-        <ResponsiveContainer width="100%" height="75%">
-          <LineChart
-            width={500}
-            height={500}
-            data={dataFetched ? data : []}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              style={{ fontSize: 10, fontWeight: "bold" }}
-              angle={0}
-              dataKey={dataFetched ? "date" : ""}
-            />
-            <YAxis />
-            <Tooltip
-              content={
-                <ToolTipContent
-                  active={null}
-                  payload={undefined}
-                  label={undefined}
-                />
-              }
-            />
+        <div style={{ display: "flex", flex: 0.8 }}>
+          {togglePage ? (
+            <div>
+              <ArtList />
+            </div>
+          ) : (
+            <>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  width={500}
+                  height={500}
+                  data={dataFetched ? data : []}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    style={{ fontSize: 10, fontWeight: "bold" }}
+                    angle={0}
+                    dataKey={dataFetched ? "date" : ""}
+                  />
+                  <YAxis />
+                  <Tooltip
+                    key={randomString(5)}
+                    content={
+                      <ToolTipContent
+                        key={randomString(5)}
+                        active={null}
+                        payload={undefined}
+                        label={undefined}
+                      />
+                    }
+                  />
 
-            <Legend />
+                  <Legend />
 
-            {dataFetched ? (
-              <>
-                {searchTermsArray.map((item: any, pos: number) => {
-                  return (
-                    <Line
-                      key={pos}
-                      type="monotoneX"
-                      stroke={linegraphColors[pos]}
-                      strokeWidth={2}
-                      dataKey={item}
-                      legendType="plainline"
-                    />
-                  );
-                })}
-              </>
-            ) : null}
-          </LineChart>
-        </ResponsiveContainer>
+                  {dataFetched ? (
+                    <>
+                      {searchTermsArray.map((item: any, pos: number) => {
+                        return (
+                          <Line
+                            key={randomString(5)}
+                            type="monotoneX"
+                            stroke={linegraphColors[pos]}
+                            strokeWidth={2}
+                            dataKey={item}
+                            legendType="plainline"
+                          />
+                        );
+                      })}
+                    </>
+                  ) : null}
+                </LineChart>
+              </ResponsiveContainer>
+            </>
+          )}
+        </div>
       </div>
     </>
   );
