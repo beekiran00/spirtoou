@@ -31,7 +31,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import TextField from "@mui/material/TextField";
 import ArtList from "../ArtList";
-import randomString from "./index.logic";
+import { randomString } from "./index.logic";
+import { processArticles } from "../ArtList/index.logic";
 
 const consola = require("consola");
 const qs = require("qs");
@@ -44,6 +45,8 @@ const searchList: any[] = [
     `"elon musk" (twitter or whatsapp or facebook or instagram) sourcelang:english`,
     `"elon musk" theme:MEDIA_SOCIAL sourcelang:english`,
     `"elon musk" "social media" sourcelang:english`,
+    `"elon musk" social and media sourcelang:english`,
+    `"elon musk" (social or media) sourcelang:english`,
   ],
 
   [
@@ -162,11 +165,12 @@ function Home() {
           mode: mode.current,
           maxrecords: 75,
           format: "json",
-          sort: "hybridrel",
+          sort: "dateasc",
         });
       const query: any = { searchTerm: searchTermsArray[count], endpoint };
       temp.push(query);
     }
+    consola.info(temp);
 
     // setSearchTermsEndpointsArray(temp);
 
@@ -209,7 +213,7 @@ function Home() {
 
       //data fetched with "mode=artlist" do not return different keys from timelinevol,timelinevolraw or timelinelinevolinfo
       if (mode.current === "artlist") {
-        consola.info(reqData);
+        const results: any = processArticles(reqData);
       } else {
         const combinedQueriesData = reqData.map((item: any, idx: number) => {
           return {
@@ -442,7 +446,7 @@ function Home() {
   /**number of top articles to render */
   const topArticles = (article: any) => {
     let articles: any = [];
-    var noArticles = 3;
+    var noArticles = 5;
     for (let i = 0; i < noArticles; i++) {
       if (article[i] == undefined || null || "") {
         articles.push(

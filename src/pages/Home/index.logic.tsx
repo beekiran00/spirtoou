@@ -9,4 +9,4 @@ const randomString = (length: number) => {
   return result;
 };
 
-export default randomString;
+export { randomString };

@@ -1,8 +1,7 @@
-const abc = () => {
-  console.log("shite");
+import consola from "consola";
+
+const processArticles = (data: any[]) => {
+  // consola.success(data);
 };
 
-const xyz = () => {};
-
-export { abc, xyz };
-//module.exports = {abc}
+export { processArticles };
