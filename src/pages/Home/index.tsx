@@ -33,6 +33,7 @@ import TextField from "@mui/material/TextField";
 import ArtList from "../ArtList";
 import { randomString } from "./index.logic";
 import { processArticles } from "../ArtList/index.logic";
+import { linegraphColors } from "./index.logic";
 
 const consola = require("consola");
 const qs = require("qs");
@@ -69,15 +70,6 @@ const searchList: any[] = [
     `investment (ethereum OR dogecoin OR bitcoin)`,
     `investment ethereum dogecoin bitcoin`,
   ],
-];
-
-//colors array to assign to each search item to use for line graph
-const linegraphColors: string[] = [
-  "#0099CC",
-  "#FF6600",
-  "#00CC00",
-  "#924CB9",
-  "#BF4E93",
 ];
 
 function Home() {
@@ -170,7 +162,7 @@ function Home() {
       const query: any = { searchTerm: searchTermsArray[count], endpoint };
       temp.push(query);
     }
-    consola.info(temp);
+    consola.info("query endpoint urls: ", temp);
 
     // setSearchTermsEndpointsArray(temp);
 

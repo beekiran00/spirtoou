@@ -1,3 +1,12 @@
+//colors array to assign to each search item to use for line graph
+const linegraphColors: string[] = [
+  "#0099CC",
+  "#FF6600",
+  "#00CC00",
+  "#924CB9",
+  "#BF4E93",
+];
+
 const randomString = (length: number) => {
   var result = "";
   var characters =
@@ -9,4 +18,4 @@ const randomString = (length: number) => {
   return result;
 };
 
-export { randomString };
+export { randomString, linegraphColors };
