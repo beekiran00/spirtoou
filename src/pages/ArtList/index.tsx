@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { searchTerms, finalArticlesData, returnArticles } from "./index.logic";
 import { randomString, linegraphColors } from "../Home/index.logic";
-import moment from "moment";
 
 function ArtList() {
   return (
@@ -35,7 +33,7 @@ function ArtList() {
           <div
             style={{
               display: "flex",
-              flex: 1,
+              flex: 0.5,
               justifyContent: "center",
               alignItems: "center",
               border: "1px solid grey",
@@ -66,7 +64,11 @@ function ArtList() {
                 >
                   <p
                     key={randomString(5)}
-                    style={{ color: linegraphColors[pos] }}
+                    style={{
+                      color: linegraphColors[pos],
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
                   >
                     {item}
                   </p>
@@ -93,8 +95,8 @@ function ArtList() {
               style={{
                 display: "flex",
                 width: "100%",
-                height: 100,
-                paddingTop: 2,
+                paddingTop: 5,
+                paddingBottom: 5,
               }}
               key={randomString(5)}
             >
@@ -103,14 +105,19 @@ function ArtList() {
                 key={randomString(5)}
                 style={{
                   display: "flex",
-                  flex: 1,
+                  flex: 0.5,
                   justifyContent: "center",
                   alignItems: "center",
                   border: "1px solid grey",
                   marginRight: 5,
                 }}
               >
-                <p key={randomString(5)}>{itemA?.date}</p>
+                <p
+                  style={{ fontSize: 14, fontWeight: "bold" }}
+                  key={randomString(5)}
+                >
+                  {itemA?.date}
+                </p>
               </div>
 
               {/* map through query items column to return articles for each query item */}
@@ -126,20 +133,16 @@ function ArtList() {
                       overflowY: "scroll",
                     }}
                   >
-                    <div>
-                      <p
-                        style={{
-                          fontSize: 12,
-                          maxWidth: 230,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {itemA[itemB][0]?.title == null
-                          ? "no articles"
-                          : itemA[itemB][0]?.title}
-                      </p>
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        flexDirection: "column",
+                        width: "100%",
+                        paddingLeft: 5,
+                        paddingRight: 5,
+                      }}
+                    >
+                      {returnArticles(itemA[itemB])}
                     </div>
                   </div>
                 );
